@@ -9,14 +9,12 @@ use App\Http\Requests\ActualizarFotoRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Carbon\Carbon; // <--- AGREGA ESTO
 
 class FotoController extends Controller
 {
     /**
      * Display all photos for a specific album.
-     *
-     * @param  int  $album_id
-     * @return \Illuminate\View\View
      */
     public function index(int $album_id): View
     {
@@ -31,33 +29,32 @@ class FotoController extends Controller
 
     /**
      * Show the form to create a new photo.
-     *
-     * @param  int  $album_id
-     * @return \Illuminate\View\View
      */
     public function getCrear(int $album_id): View
     {
         $album = Album::findOrFail($album_id);
-
         return view('album.crear-foto', ['album' => $album]);
     }
 
     /**
      * Store a newly created photo in the database.
-     *
-     * @param  \App\Http\Requests\CrearFotoRequest  $request
-     * @param  int  $album_id
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function postCrear(CrearFotoRequest $request, int $album_id): RedirectResponse
     {
         $album = Album::findOrFail($album_id);
 
+        // --- LÓGICA DE SUBIDA DE ARCHIVO ---
+        $imagen = $request->file('imagen');
+        $ruta = '/img/';
+        $nombreUnico = sha1(Carbon::now()) . "." . $imagen->guessExtension();
+        $imagen->move(public_path() . $ruta, $nombreUnico);
+        // -----------------------------------
+
         Foto::create([
             'album_id' => $album_id,
             'foto_nombre' => $request->get('nombre'),
             'foto_descripcion' => $request->get('descripcion') ?? '',
-            'foto_ruta' => $request->get('url'),
+            'foto_ruta' => $ruta . $nombreUnico, // Guardamos la ruta del archivo local
         ]);
 
         return redirect()->route('album.fotos', ['album_id' => $album_id])
@@ -66,9 +63,6 @@ class FotoController extends Controller
 
     /**
      * Show the form to edit a photo.
-     *
-     * @param  int  $foto_id
-     * @return \Illuminate\View\View
      */
     public function getActualizar(int $foto_id): View
     {
@@ -81,10 +75,6 @@ class FotoController extends Controller
 
     /**
      * Update the specified photo in the database.
-     *
-     * @param  \App\Http\Requests\ActualizarFotoRequest  $request
-     * @param  int  $foto_id
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function postActualizar(ActualizarFotoRequest $request, int $foto_id): RedirectResponse
     {
@@ -105,9 +95,6 @@ class FotoController extends Controller
 
     /**
      * Show confirmation to delete a photo.
-     *
-     * @param  int  $foto_id
-     * @return \Illuminate\View\View
      */
     public function getEliminar(int $foto_id): View
     {
@@ -120,9 +107,6 @@ class FotoController extends Controller
 
     /**
      * Delete the specified photo from the database.
-     *
-     * @param  int  $foto_id
-     * @return \Illuminate\Http\RedirectResponse
      */
     public function postEliminar(int $foto_id): RedirectResponse
     {

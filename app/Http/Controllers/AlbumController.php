@@ -31,11 +31,9 @@ class AlbumController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function getCrear(): View
-    {
+    public function getCrear() {
         return view('album.crear');
-    }
-
+}
     /**
      * Store a newly created album in the database.
      *

@@ -19,7 +19,7 @@
 
                 <!-- Card Body -->
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('foto.guardar', ['album_id' => $album->album_id]) }}">
+                    <form method="POST" action="{{ route('foto.guardar', ['album_id' => $album->album_id]) }}" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Nombre Field -->
@@ -65,22 +65,21 @@
                             @enderror
                         </div>
 
-                        <!-- URL Field -->
+                        <!-- Imagen Field -->
                         <div class="form-floating mb-4">
                             <input 
-                                id="url" 
-                                type="url" 
-                                class="form-control @error('url') is-invalid @enderror" 
-                                name="url" 
-                                value="{{ old('url') }}" 
-                                placeholder="{{ __('URL de la Imagen') }}"
+                                id="imagen" 
+                                type="file" 
+                                class="form-control @error('imagen') is-invalid @enderror" 
+                                name="imagen" 
+                                placeholder="{{ __('Selecciona una Imagen') }}"
                                 required 
-                                autocomplete="url"
+                                accept="image/*"
                             >
-                            <label for="url">
-                                <i class="bi bi-link-45deg me-2"></i>{{ __('URL de la Imagen') }}
+                            <label for="imagen">
+                                <i class="bi bi-image me-2"></i>{{ __('Imagen del Archivo') }}
                             </label>
-                            @error('url')
+                            @error('imagen')
                                 <div class="invalid-feedback d-block">
                                     <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
@@ -109,7 +108,7 @@
             <!-- Info Alert -->
             <div class="alert alert-info mt-4 rounded-3 border-0">
                 <i class="bi bi-info-circle me-2"></i>
-                <small>{{ __('Proporciona una URL válida de imagen para que se muestre correctamente en el álbum.') }}</small>
+                <small>{{ __('Sube una imagen en formato PNG, JPG o similar. El archivo debe ser menor a 20 MB.') }}</small>
             </div>
         </div>
     </div>

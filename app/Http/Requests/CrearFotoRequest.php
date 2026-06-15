@@ -26,7 +26,7 @@ class CrearFotoRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:1000',
-            'url' => 'required|url|max:500',
+            'imagen' => 'required|image|max:20000',
         ];
     }
 }

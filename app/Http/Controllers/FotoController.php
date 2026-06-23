@@ -9,15 +9,17 @@ use App\Http\Requests\ActualizarFotoRequest;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
-use Carbon\Carbon; // <--- AGREGA ESTO
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class FotoController extends Controller
 {
     /**
      * Display all photos for a specific album.
      */
-    public function index(int $album_id): View
+    public function index(Request $request): View
     {
+        $album_id = $request->get('album_id');
         $album = Album::findOrFail($album_id);
         $fotos = $album->fotos;
 
@@ -30,8 +32,9 @@ class FotoController extends Controller
     /**
      * Show the form to create a new photo.
      */
-    public function getCrear(int $album_id): View
+    public function getCrear(Request $request): View
     {
+        $album_id = $request->get('album_id');
         $album = Album::findOrFail($album_id);
         return view('album.crear-foto', ['album' => $album]);
     }
@@ -39,85 +42,84 @@ class FotoController extends Controller
     /**
      * Store a newly created photo in the database.
      */
-    public function postCrear(CrearFotoRequest $request, int $album_id): RedirectResponse
+    public function postCrear(CrearFotoRequest $request): RedirectResponse
     {
-        $album = Album::findOrFail($album_id);
+        $album_id = $request->get('album_id');
 
-        // --- LÓGICA DE SUBIDA DE ARCHIVO ---
-        $imagen = $request->file('imagen');
+        $imagen = $request->file('foto_imagen');
         $ruta = '/img/';
         $nombreUnico = sha1(Carbon::now()) . "." . $imagen->guessExtension();
         $imagen->move(public_path() . $ruta, $nombreUnico);
-        // -----------------------------------
 
         Foto::create([
             'album_id' => $album_id,
-            'foto_nombre' => $request->get('nombre'),
-            'foto_descripcion' => $request->get('descripcion') ?? '',
-            'foto_ruta' => $ruta . $nombreUnico, // Guardamos la ruta del archivo local
+            'foto_nombre' => $request->get('foto_nombre'),
+            'foto_descripcion' => $request->get('foto_descripcion') ?? '',
+            'foto_ruta' => $ruta . $nombreUnico,
         ]);
 
-        return redirect()->route('album.fotos', ['album_id' => $album_id])
-                       ->with('correcto', 'Foto creada exitosamente');
+        return redirect()->route('album.fotos', ['album_id' => $album_id])->with('correcto', 'Foto creada exitosamente');
     }
 
     /**
      * Show the form to edit a photo.
      */
-    public function getActualizar(int $foto_id): View
+    public function getActualizar(Request $request): View
     {
+        $foto_id = $request->get('foto_id');
         $foto = Foto::findOrFail($foto_id);
-        $album = $foto->album;
-        Gate::authorize('update', $album);
-
-        return view('album.editar-foto', ['foto' => $foto, 'album' => $album]);
+        return view('album.editar-foto', ['foto' => $foto]);
     }
 
     /**
      * Update the specified photo in the database.
      */
-    public function postActualizar(ActualizarFotoRequest $request, int $foto_id): RedirectResponse
+    public function postActualizar(ActualizarFotoRequest $request): RedirectResponse
     {
+        $foto_id = $request->get('foto_id');
         $foto = Foto::findOrFail($foto_id);
-        $album = $foto->album;
-        Gate::authorize('update', $album);
-        $albumId = $foto->album_id;
 
-        $foto->update([
-            'foto_nombre' => $request->get('nombre'),
-            'foto_descripcion' => $request->get('descripcion') ?? '',
-            'foto_ruta' => $request->get('url'),
-        ]);
+        Gate::authorize('update', $foto);
 
-        return redirect()->route('album.fotos', ['album_id' => $albumId])
-                       ->with('correcto', 'Foto actualizada exitosamente');
+        $foto->foto_nombre = $request->get('foto_nombre');
+        $foto->foto_descripcion = $request->get('foto_descripcion') ?? '';
+
+        if ($request->hasFile('foto_imagen')) {
+            $imagen = $request->file('foto_imagen');
+            $ruta = '/img/';
+            $nombreUnico = sha1(Carbon::now()) . "." . $imagen->guessExtension();
+            $imagen->move(public_path() . $ruta, $nombreUnico);
+            $foto->foto_ruta = $ruta . $nombreUnico;
+        }
+
+        $foto->save();
+
+        return redirect('/album/fotos?album_id=' . $foto->album_id)->with('correcto', 'La foto ha sido actualizada');
     }
 
     /**
      * Show confirmation to delete a photo.
      */
-    public function getEliminar(int $foto_id): View
+    public function getEliminar(Request $request): View
     {
+        $foto_id = $request->get('foto_id');
         $foto = Foto::findOrFail($foto_id);
-        $album = $foto->album;
-        Gate::authorize('delete', $album);
-
         return view('album.eliminar-foto', ['foto' => $foto]);
     }
 
     /**
      * Delete the specified photo from the database.
      */
-    public function postEliminar(int $foto_id): RedirectResponse
+    public function postEliminar(Request $request): RedirectResponse
     {
+        $foto_id = $request->get('foto_id');
         $foto = Foto::findOrFail($foto_id);
-        $album = $foto->album;
-        Gate::authorize('delete', $album);
-        $albumId = $foto->album_id;
 
+        Gate::authorize('delete', $foto);
+
+        $album_id = $foto->album_id;
         $foto->delete();
 
-        return redirect()->route('album.fotos', ['album_id' => $albumId])
-                       ->with('correcto', 'Foto eliminada exitosamente');
+        return redirect()->route('album.fotos', ['album_id' => $album_id])->with('correcto', 'Foto eliminada exitosamente');
     }
 }

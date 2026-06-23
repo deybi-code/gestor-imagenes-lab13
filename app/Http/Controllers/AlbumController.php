@@ -9,6 +9,7 @@ use App\Models\Album;
 use App\Http\Requests\CrearAlbumRequest;
 use App\Http\Requests\ActualizarAlbumRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AlbumController extends Controller
 {
@@ -31,9 +32,11 @@ class AlbumController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function getCrear() {
+    public function getCrear()
+    {
         return view('album.crear');
-}
+    }
+
     /**
      * Store a newly created album in the database.
      *
@@ -57,35 +60,35 @@ class AlbumController extends Controller
     /**
      * Show the form to edit an album.
      *
-     * @param  int  $album_id
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\View\View
      */
-    public function getActualizar(int $album_id): View
+    public function getActualizar(Request $request)
     {
-        $album = Album::findOrFail($album_id);
-        Gate::authorize('update', $album);
-
-        return view('album.editar', ['album' => $album]);
+        $album_id = $request->get('album_id');
+        $album = Album::find($album_id);
+        return view('album.actualizar', ['album' => $album]);
     }
 
     /**
      * Update the specified album in the database.
      *
      * @param  \App\Http\Requests\ActualizarAlbumRequest  $request
-     * @param  int  $album_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function postActualizar(ActualizarAlbumRequest $request, int $album_id): RedirectResponse
+    public function postActualizar(ActualizarAlbumRequest $request): RedirectResponse
     {
+        $album_id = $request->get('album_id');
         $album = Album::findOrFail($album_id);
+
         Gate::authorize('update', $album);
 
         $album->update([
-            'album_nombre' => $request->get('nombre'),
-            'album_descripcion' => $request->get('descripcion') ?? '',
+            'album_nombre' => $request->get('album_nombre'),
+            'album_descripcion' => $request->get('album_descripcion'),
         ]);
 
-        return redirect()->route('album.index')->with('correcto', 'Álbum actualizado exitosamente');
+        return redirect()->route('album.index')->with('correcto', 'El álbum ha sido actualizado');
     }
 
     /**

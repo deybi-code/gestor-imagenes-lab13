@@ -24,9 +24,9 @@ class ActualizarFotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string|max:1000',
-            'url' => 'required|url|max:500',
+            'foto_nombre' => 'required|string|max:255',
+            'foto_descripcion' => 'nullable|string|max:1000',
+            'foto_imagen' => 'nullable|image|max:20000',
         ];
     }
 }

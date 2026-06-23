@@ -24,9 +24,9 @@ class CrearFotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string|max:1000',
-            'imagen' => 'required|image|max:20000',
+            'foto_nombre' => 'required|string|max:255',
+            'foto_descripcion' => 'nullable|string|max:1000',
+            'foto_imagen' => 'required|image|max:20000',
         ];
     }
 }

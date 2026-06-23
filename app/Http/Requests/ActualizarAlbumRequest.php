@@ -6,26 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class ActualizarAlbumRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, string>
-     */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string|max:1000',
+            'album_id' => 'required|exists:album,album_id',
+            'album_nombre' => 'required|string|max:255',
+            'album_descripcion' => 'required|string|max:1000'
         ];
     }
 }

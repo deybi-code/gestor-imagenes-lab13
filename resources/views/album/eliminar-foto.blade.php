@@ -9,19 +9,22 @@
 
                 <div class="card-body">
                     <div class="alert alert-warning">
-                        <strong>¿Está seguro de que desea eliminar la foto "{{ $foto->foto_nombre }}"?</strong>
-                        <p>Esta acción no se puede deshacer.</p>
+                        <strong>{{ __('¿Está seguro de que desea eliminar la foto') }} "{{ $foto->foto_nombre }}"?</strong>
+                        <p>{{ __('Esta acción no se puede deshacer.') }}</p>
                     </div>
 
-                    <form method="POST" action="{{ route('foto.eliminar', ['foto_id' => $foto->foto_id]) }}" style="display: inline;">
+                    <!-- Formulario ajustado a POST para coincidir con web.php -->
+                    <form method="POST" action="/foto/eliminar" style="display: inline;">
                         @csrf
-                        @method('DELETE')
+                        <!-- Campo oculto para pasar el ID de la foto -->
+                        <input type="hidden" name="foto_id" value="{{ $foto->foto_id }}">
+
                         <button type="submit" class="btn btn-danger">
                             {{ __('Eliminar Foto') }}
                         </button>
                     </form>
 
-                    <a href="{{ route('album.fotos', ['album_id' => $foto->album_id]) }}" class="btn btn-secondary">
+                    <a href="/album/fotos?album_id={{ $foto->album_id }}" class="btn btn-secondary">
                         {{ __('Cancelar') }}
                     </a>
                 </div>

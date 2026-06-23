@@ -24,21 +24,21 @@
 
                         <!-- Nombre Field -->
                         <div class="form-floating mb-3">
-                            <input 
-                                id="nombre" 
-                                type="text" 
-                                class="form-control @error('nombre') is-invalid @enderror" 
-                                name="nombre" 
-                                value="{{ old('nombre') }}" 
+                            <input
+                                id="foto_nombre"
+                                type="text"
+                                class="form-control @error('foto_nombre') is-invalid @enderror"
+                                name="foto_nombre"
+                                value="{{ old('foto_nombre') }}"
                                 placeholder="{{ __('Nombre de la Foto') }}"
-                                required 
-                                autocomplete="nombre" 
+                                required
+                                autocomplete="off"
                                 autofocus
                             >
-                            <label for="nombre">
+                            <label for="foto_nombre">
                                 <i class="bi bi-card-image me-2"></i>{{ __('Nombre de la Foto') }}
                             </label>
-                            @error('nombre')
+                            @error('foto_nombre')
                                 <div class="invalid-feedback d-block">
                                     <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
@@ -47,18 +47,18 @@
 
                         <!-- Descripción Field -->
                         <div class="form-floating mb-3">
-                            <textarea 
-                                id="descripcion" 
-                                class="form-control @error('descripcion') is-invalid @enderror" 
-                                name="descripcion" 
+                            <textarea
+                                id="foto_descripcion"
+                                class="form-control @error('foto_descripcion') is-invalid @enderror"
+                                name="foto_descripcion"
                                 placeholder="{{ __('Descripción') }}"
                                 rows="3"
                                 style="resize: none;"
-                            >{{ old('descripcion') }}</textarea>
-                            <label for="descripcion">
+                            >{{ old('foto_descripcion') }}</textarea>
+                            <label for="foto_descripcion">
                                 <i class="bi bi-file-text me-2"></i>{{ __('Descripción (Opcional)') }}
                             </label>
-                            @error('descripcion')
+                            @error('foto_descripcion')
                                 <div class="invalid-feedback d-block">
                                     <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
@@ -67,19 +67,19 @@
 
                         <!-- Imagen Field -->
                         <div class="form-floating mb-4">
-                            <input 
-                                id="imagen" 
-                                type="file" 
-                                class="form-control @error('imagen') is-invalid @enderror" 
-                                name="imagen" 
+                            <input
+                                id="foto_imagen"
+                                type="file"
+                                class="form-control @error('foto_imagen') is-invalid @enderror"
+                                name="foto_imagen"
                                 placeholder="{{ __('Selecciona una Imagen') }}"
-                                required 
+                                required
                                 accept="image/*"
                             >
-                            <label for="imagen">
+                            <label for="foto_imagen">
                                 <i class="bi bi-image me-2"></i>{{ __('Imagen del Archivo') }}
                             </label>
-                            @error('imagen')
+                            @error('foto_imagen')
                                 <div class="invalid-feedback d-block">
                                     <i class="bi bi-exclamation-circle me-1"></i>{{ $message }}
                                 </div>
@@ -88,14 +88,14 @@
 
                         <!-- Buttons -->
                         <div class="d-grid gap-2">
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 class="btn btn-primary btn-lg rounded-pill fw-semibold"
                             >
                                 <i class="bi bi-check-lg me-2"></i>{{ __('Agregar Foto') }}
                             </button>
-                            <a 
-                                href="{{ route('album.fotos', ['album_id' => $album->album_id]) }}" 
+                            <a
+                                href="{{ route('album.fotos', ['album_id' => $album->album_id]) }}"
                                 class="btn btn-outline-secondary rounded-pill fw-semibold"
                             >
                                 <i class="bi bi-arrow-left me-2"></i>{{ __('Cancelar') }}
